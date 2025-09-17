@@ -1,0 +1,406 @@
+<%- include ('partials/head', { page: 'dashboard' }) %>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div>
+                    <div class="logo">ConvoManage</div>
+                    <div class="tagline">Streamlining Online Conference Management with Efficiency and Ease</div>
+                </div>
+                <nav>
+                    <button class="nav-btn active" onclick="showDashboard('home')">Home</button>
+                    <button class="nav-btn" onclick="showDashboard('attendees')">Attendees</button>
+                    <button class="nav-btn" onclick="showDashboard('speakers')">Speakers</button>
+                    <button class="nav-btn" onclick="showDashboard('sessions')">Sessions</button>
+                    <button class="nav-btn" onclick="showDashboard('conferences')">Conferences</button>
+                    <button class="nav-btn" onclick="showDashboard('analytics')">Analytics</button>
+                </nav>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- Home Dashboard -->
+            <div id="home" class="dashboard active">
+                <div class="welcome-section">
+                    <h1>Welcome to ConvoManage</h1>
+                    <p>Your comprehensive solution for managing online conferences with efficiency and ease. From attendee registration to session tracking, we've got you covered.</p>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <div class="feature-icon">👥</div>
+                        <h3>Total Attendees</h3>
+                        <div class="number" id="totalAttendees">0</div>
+                        <p>Registered participants across all conferences</p>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="feature-icon">🎤</div>
+                        <h3>Active Speakers</h3>
+                        <div class="number" id="totalSpeakers">0</div>
+                        <p>Expert speakers ready to present</p>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="feature-icon">📅</div>
+                        <h3>Scheduled Sessions</h3>
+                        <div class="number" id="totalSessions">0</div>
+                        <p>Sessions across all conferences</p>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="feature-icon">🎯</div>
+                        <h3>Active Conferences</h3>
+                        <div class="number" id="totalConferences">0</div>
+                        <p>Currently managed conferences</p>
+                    </div>
+                </div>
+
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🚀</div>
+                        <h3>Quick Setup</h3>
+                        <p>Get your conference up and running in minutes with our intuitive setup wizard</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔒</div>
+                        <h3>Secure Platform</h3>
+                        <p>Enterprise-grade security ensures your conference data remains protected</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <h3>Real-time Analytics</h3>
+                        <p>Monitor attendance, engagement, and performance metrics in real-time</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🌐</div>
+                        <h3>Global Reach</h3>
+                        <p>Connect attendees from around the world with our scalable infrastructure</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Attendees Management -->
+            <div id="attendees" class="dashboard">
+                <div class="form-section">
+                    <h2>Attendee Registration</h2>
+                    <div id="attendeeAlert"></div>
+                    <form id="attendeeForm">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="attendeeName">Full Name *</label>
+                                <input type="text" id="attendeeName" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="attendeeEmail">Email Address *</label>
+                                <input type="email" id="attendeeEmail" name="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="attendeeCompany">Company/Organization</label>
+                                <input type="text" id="attendeeCompany" name="company">
+                            </div>
+                            <div class="form-group">
+                                <label for="attendeeTitle">Job Title</label>
+                                <input type="text" id="attendeeTitle" name="title">
+                            </div>
+                            <div class="form-group">
+                                <label for="attendeeConference">Conference</label>
+                                <select id="attendeeConference" name="conference" required>
+                                    <option value="">Select Conference</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="attendeeTicket">Ticket Type</label>
+                                <select id="attendeeTicket" name="ticketType">
+                                    <option value="standard">Standard</option>
+                                    <option value="premium">Premium</option>
+                                    <option value="vip">VIP</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn">Register Attendee</button>
+                    </form>
+                </div>
+
+                <div class="search-filter">
+                    <input type="text" id="attendeeSearch" placeholder="Search attendees..." onkeyup="filterAttendees()">
+                    <select id="attendeeStatusFilter" onchange="filterAttendees()">
+                        <option value="">All Status</option>
+                        <option value="confirmed">Confirmed</option>
+                        <option value="pending">Pending</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Company</th>
+                            <th>Conference</th>
+                            <th>Ticket Type</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="attendeesTableBody">
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Speakers Management -->
+            <div id="speakers" class="dashboard">
+                <div class="form-section">
+                    <h2>Speaker Management</h2>
+                    <div id="speakerAlert"></div>
+                    <form id="speakerForm">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="speakerName">Speaker Name *</label>
+                                <input type="text" id="speakerName" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="speakerEmail">Email Address *</label>
+                                <input type="email" id="speakerEmail" name="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="speakerCompany">Company/Organization</label>
+                                <input type="text" id="speakerCompany" name="company">
+                            </div>
+                            <div class="form-group">
+                                <label for="speakerTitle">Title/Position</label>
+                                <input type="text" id="speakerTitle" name="title">
+                            </div>
+                            <div class="form-group">
+                                <label for="speakerExpertise">Area of Expertise</label>
+                                <input type="text" id="speakerExpertise" name="expertise">
+                            </div>
+                            <div class="form-group">
+                                <label for="speakerFee">Speaking Fee ($)</label>
+                                <input type="number" id="speakerFee" name="fee" min="0">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="speakerBio">Biography</label>
+                            <textarea id="speakerBio" name="bio" rows="4" placeholder="Brief biography and achievements..."></textarea>
+                        </div>
+                        <button type="submit" class="btn">Add Speaker</button>
+                    </form>
+                </div>
+
+                <div class="search-filter">
+                    <input type="text" id="speakerSearch" placeholder="Search speakers..." onkeyup="filterSpeakers()">
+                </div>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Company</th>
+                            <th>Expertise</th>
+                            <th>Fee</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="speakersTableBody">
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Sessions Management -->
+            <div id="sessions" class="dashboard">
+                <div class="form-section">
+                    <h2>Session Scheduling</h2>
+                    <div id="sessionAlert"></div>
+                    <form id="sessionForm">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="sessionTitle">Session Title *</label>
+                                <input type="text" id="sessionTitle" name="title" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="sessionSpeaker">Speaker</label>
+                                <select id="sessionSpeaker" name="speaker" required>
+                                    <option value="">Select Speaker</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="sessionConference">Conference</label>
+                                <select id="sessionConference" name="conference" required>
+                                    <option value="">Select Conference</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="sessionDate">Date</label>
+                                <input type="date" id="sessionDate" name="date" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="sessionStartTime">Start Time</label>
+                                <input type="time" id="sessionStartTime" name="startTime" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="sessionDuration">Duration (minutes)</label>
+                                <input type="number" id="sessionDuration" name="duration" min="15" max="480" value="60">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="sessionDescription">Description</label>
+                            <textarea id="sessionDescription" name="description" rows="3" placeholder="Session description and objectives..."></textarea>
+                        </div>
+                        <button type="submit" class="btn">Schedule Session</button>
+                    </form>
+                </div>
+
+                <div class="search-filter">
+                    <input type="text" id="sessionSearch" placeholder="Search sessions..." onkeyup="filterSessions()">
+                    <input type="date" id="sessionDateFilter" onchange="filterSessions()">
+                </div>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Speaker</th>
+                            <th>Conference</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Duration</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sessionsTableBody">
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Conferences Management -->
+            <div id="conferences" class="dashboard">
+                <div class="form-section">
+                    <h2>Conference Setup</h2>
+                    <div id="conferenceAlert"></div>
+                    <form id="conferenceForm">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="conferenceName">Conference Name *</label>
+                                <input type="text" id="conferenceName" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="conferenceStartDate">Start Date</label>
+                                <input type="date" id="conferenceStartDate" name="startDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="conferenceEndDate">End Date</label>
+                                <input type="date" id="conferenceEndDate" name="endDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="conferenceCapacity">Max Capacity</label>
+                                <input type="number" id="conferenceCapacity" name="capacity" min="1" value="100">
+                            </div>
+                            <div class="form-group">
+                                <label for="conferenceType">Conference Type</label>
+                                <select id="conferenceType" name="type">
+                                    <option value="technology">Technology</option>
+                                    <option value="business">Business</option>
+                                    <option value="academic">Academic</option>
+                                    <option value="healthcare">Healthcare</option>
+                                    <option value="education">Education</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="conferenceStatus">Status</label>
+                                <select id="conferenceStatus" name="status">
+                                    <option value="planning">Planning</option>
+                                    <option value="active">Active</option>
+                                    <option value="completed">Completed</option>
+                                    <option value="cancelled">Cancelled</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="conferenceDescription">Description</label>
+                            <textarea id="conferenceDescription" name="description" rows="4" placeholder="Conference overview and objectives..."></textarea>
+                        </div>
+                        <button type="submit" class="btn">Create Conference</button>
+                    </form>
+                </div>
+
+                <div class="search-filter">
+                    <input type="text" id="conferenceSearch" placeholder="Search conferences..." onkeyup="filterConferences()">
+                    <select id="conferenceStatusFilter" onchange="filterConferences()">
+                        <option value="">All Status</option>
+                        <option value="planning">Planning</option>
+                        <option value="active">Active</option>
+                        <option value="completed">Completed</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Capacity</th>
+                            <th>Registered</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="conferencesTableBody">
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Analytics Dashboard -->
+            <div id="analytics" class="dashboard">
+                <h2>Analytics & Reports</h2>
+                
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <div class="feature-icon">📈</div>
+                        <h3>Registration Rate</h3>
+                        <div class="number" id="registrationRate">0%</div>
+                        <p>Average across all conferences</p>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="feature-icon">💰</div>
+                        <h3>Total Revenue</h3>
+                        <div class="number" id="totalRevenue">$0</div>
+                        <p>From all ticket sales</p>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="feature-icon">⭐</div>
+                        <h3>Avg. Rating</h3>
+                        <div class="number" id="avgRating">0.0</div>
+                        <p>Conference satisfaction score</p>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="feature-icon">🌍</div>
+                        <h3>Countries</h3>
+                        <div class="number" id="totalCountries">0</div>
+                        <p>Attendees from different countries</p>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Conference Performance</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Conference</th>
+                                <th>Attendees</th>
+                                <th>Sessions</th>
+                                <th>Completion Rate</th>
+                                <th>Revenue</th>
+                                <th>Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody id="analyticsTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+<%- include ('partials/footer', { page: 'dashboard' }) %>

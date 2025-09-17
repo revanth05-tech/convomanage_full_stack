@@ -5,8 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ConvoManage</title>
 
-  <!-- Custom Styles -->
-  <link rel="stylesheet" href="/public/stylesheets/style.css">
+  <!-- Common Styles -->
+  <link rel="stylesheet" href="/stylesheets/style.css">
+
+  <!-- Page-specific CSS -->
+  <% if (page === 'dashboard') { %>
+    <link rel="stylesheet" href="/stylesheets/dashboard.css">
+  <% } %>
 
   <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>

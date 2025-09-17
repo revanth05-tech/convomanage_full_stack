@@ -1,9 +1,22 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
+const User = require('../models/user');
+const passport = require('passport');
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+router.post('/register', (req, res, next) => {
+  const { name, email, password } = req.body;
+
+  const user = new User({ name, email }); // matches your schema
+  User.register(user, password)
+    .then(() => {
+      passport.authenticate('local')(req, res, () => {
+        res.redirect('/dashboard');
+      });
+    })
+    .catch(err => {
+      console.log(err);
+      res.redirect('/register');
+    });
 });
 
 module.exports = router;
