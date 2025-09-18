@@ -1,0 +1,15 @@
+// filepath: c:\Users\osait\Desktop\convomanage\views\partials\nav.ejs
+<nav class="bg-gray-800 text-white p-4">
+    <div class="container mx-auto flex justify-between items-center">
+        <a href="/" class="text-xl font-bold">ConvoManage</a>
+        <div class="flex gap-4">
+            <% if (currentUser) { %>
+                <a href="/dashboard" class="hover:text-gray-300">Dashboard</a>
+                <a href="/logout" class="hover:text-gray-300">Logout</a>
+            <% } else { %>
+                <a href="/login" class="hover:text-gray-300">Login</a>
+                <a href="/register" class="hover:text-gray-300">Register</a>
+            <% } %>
+        </div>
+    </div>
+</nav>

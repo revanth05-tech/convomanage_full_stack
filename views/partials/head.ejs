@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="/stylesheets/style.css">
 
   <!-- Page-specific CSS -->
-  <% if (page === 'dashboard') { %>
+  <% if (typeof page !== 'undefined' && page === 'dashboard') { %>
     <link rel="stylesheet" href="/stylesheets/dashboard.css">
   <% } %>
 

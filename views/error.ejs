@@ -1,3 +1,6 @@
-<h1><%= message %></h1>
-<h2><%= error.status %></h2>
-<pre><%= error.stack %></pre>
+// filepath: c:\Users\osait\Desktop\convomanage\views\error.ejs
+<div class="text-center p-10 bg-white rounded-lg shadow-md">
+    <h1 class="text-4xl font-bold text-red-600 mb-4"><%= message %></h1>
+    <h2 class="text-2xl text-gray-700"><%= error.status %></h2>
+    <pre class="mt-4 text-left bg-gray-100 p-4 rounded"><%= error.stack %></pre>
+</div>

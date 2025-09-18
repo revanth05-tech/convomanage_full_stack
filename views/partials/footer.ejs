@@ -1,6 +1,6 @@
-  <!-- Common Scripts -->
-  <% if (page === 'dashboard') { %>
-    <script src="/javascripts/dashboard.js"></script>
-  <% } %>
+<!-- Common Scripts -->
+<% if (typeof page !== 'undefined' && page === 'dashboard') { %>
+  <script src="/javascripts/dashboard.js"></script>
+<% } %>
 </body>
 </html>

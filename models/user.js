@@ -1,20 +1,19 @@
+// filepath: c:\Users\osait\Desktop\convomanage\models\user.js
 const mongoose = require('mongoose');
-const plm = require('passport-local-mongoose');
+const passportLocalMongoose = require('passport-local-mongoose');
 
-const userSchema = new mongoose.Schema({
-    name:{
-        type:String,
-        required:true,
-        trim:true
+const UserSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true
     },
-    email:{
-        type:String,
-        required:true,
-        unique:true,
-        lowercase:true
+    email: {
+        type: String,
+        required: true,
+        unique: true
     }
 });
 
-userSchema.plugin(plm,{usernameField:'email'});
+UserSchema.plugin(passportLocalMongoose, { usernameField: 'email' });
 
-module.exports = mongoose.model('User',userSchema);
+module.exports = mongoose.model('User', UserSchema);
