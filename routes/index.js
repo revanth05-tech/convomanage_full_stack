@@ -2,6 +2,10 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 const User = require('../models/user');
+const Attendee = require('../models/attendee');
+const Speaker = require('../models/speaker');
+const Session = require('../models/session');
+const Conference = require('../models/conference');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -18,19 +22,17 @@ function ensureAuthenticated(req, res, next) {
 // Multer setup for profile image uploads
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    // Change path to public/images/uploads
     const uploadDir = path.join(__dirname, '..', 'public', 'images', 'uploads');
     if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true }); // create folder if it doesn't exist
+      fs.mkdirSync(uploadDir, { recursive: true });
     }
     cb(null, uploadDir);
   },
   filename: function (req, file, cb) {
     const ext = path.extname(file.originalname);
-    cb(null, req.user._id + '-' + Date.now() + ext); // unique filename
+    cb(null, req.user._id + '-' + Date.now() + ext);
   }
 });
-
 
 const fileFilter = (req, file, cb) => {
   if (file.mimetype.startsWith('image/')) {
@@ -43,7 +45,7 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({ storage, fileFilter });
 
 // Serve uploads folder as static
-router.use('/images/uploads', express.static(path.join(__dirname, '..', 'uploads')));
+router.use('/images/uploads', express.static(path.join(__dirname, '..', 'public', 'images', 'uploads')));
 
 // GET home page
 router.get('/', (req, res) => {
@@ -84,12 +86,26 @@ router.post('/login', passport.authenticate('local', {
 }));
 
 // GET dashboard page
-router.get('/dashboard', ensureAuthenticated, (req, res) => {
-  res.render('dashboard', { 
-    title: 'Dashboard', 
-    page: 'dashboard',
-    user: req.user 
-  });
+router.get('/dashboard', ensureAuthenticated, async (req, res) => {
+  try {
+    const totalAttendees = await Attendee.countDocuments({});
+    const totalSpeakers = await Speaker.countDocuments({});
+    const totalSessions = await Session.countDocuments({});
+    const totalConferences = await Conference.countDocuments({});
+
+    res.render('dashboard', { 
+      currentUser: req.user,
+      totalAttendees,
+      totalSpeakers,
+      totalSessions,
+      totalConferences,
+      page: 'dashboard'
+    });
+  } catch (err) {
+    console.error(err);
+    req.flash('error', 'Error loading dashboard');
+    res.redirect('/');
+  }
 });
 
 // GET profile page
