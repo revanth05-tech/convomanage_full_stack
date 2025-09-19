@@ -17,10 +17,6 @@ function ensureAuthenticated(req, res, next) {
 router.get('/', (req, res) => {
   res.render('index', { title: 'Welcome', page: 'home' });
 });
-router.get('/navbar', (req, res) => {
-  res.render('nav', { title: 'navbar', page: 'navbar', currentUser: req.user });
-});
-
 // GET register page
 router.get('/register', (req, res) => {
   res.render('register', { title: 'Register', page: 'register' });
