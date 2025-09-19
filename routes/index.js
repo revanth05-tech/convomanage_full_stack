@@ -1,8 +1,10 @@
-// filepath: c:\Users\osait\Desktop\convomanage\routes\index.js
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 const User = require('../models/user');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
 // Middleware to check if user is authenticated
 function ensureAuthenticated(req, res, next) {
@@ -13,10 +15,41 @@ function ensureAuthenticated(req, res, next) {
   res.redirect('/login');
 }
 
-// GET home page.
+// Multer setup for profile image uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    // Change path to public/images/uploads
+    const uploadDir = path.join(__dirname, '..', 'public', 'images', 'uploads');
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true }); // create folder if it doesn't exist
+    }
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    const ext = path.extname(file.originalname);
+    cb(null, req.user._id + '-' + Date.now() + ext); // unique filename
+  }
+});
+
+
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image/')) {
+    cb(null, true);
+  } else {
+    cb(new Error('Only image files are allowed!'), false);
+  }
+};
+
+const upload = multer({ storage, fileFilter });
+
+// Serve uploads folder as static
+router.use('/images/uploads', express.static(path.join(__dirname, '..', 'uploads')));
+
+// GET home page
 router.get('/', (req, res) => {
   res.render('index', { title: 'Welcome', page: 'home' });
 });
+
 // GET register page
 router.get('/register', (req, res) => {
   res.render('register', { title: 'Register', page: 'register' });
@@ -24,18 +57,18 @@ router.get('/register', (req, res) => {
 
 // POST register handle
 router.post('/register', async (req, res) => {
-    const { name, email, password } = req.body;
-    try {
-        const user = new User({ name, email });
-        await User.register(user, password);
-        passport.authenticate('local')(req, res, function () {
-            req.flash('success', 'Registration successful! Welcome.');
-            res.redirect('/dashboard');
-        });
-    } catch (e) {
-        req.flash('error', e.message);
-        res.redirect('/register');
-    }
+  const { name, email, password } = req.body;
+  try {
+    const user = new User({ name, email });
+    await User.register(user, password);
+    passport.authenticate('local')(req, res, function () {
+      req.flash('success', 'Registration successful! Welcome.');
+      res.redirect('/dashboard');
+    });
+  } catch (e) {
+    req.flash('error', e.message);
+    res.redirect('/register');
+  }
 });
 
 // GET login page
@@ -57,6 +90,29 @@ router.get('/dashboard', ensureAuthenticated, (req, res) => {
     page: 'dashboard',
     user: req.user 
   });
+});
+
+// GET profile page
+router.get('/profile', ensureAuthenticated, (req, res) => {
+  res.render('profile', { title: 'Profile', page: 'profile', user: req.user });
+});
+
+// POST profile image upload
+router.post('/upload-profile', ensureAuthenticated, upload.single('profileImage'), async (req, res) => {
+  try {
+    if (!req.file) {
+      req.flash('error', 'Please select an image to upload');
+      return res.redirect('/profile');
+    }
+    req.user.profileImage = req.file.filename;
+    await req.user.save();
+    req.flash('success', 'Profile image updated!');
+    res.redirect('/profile');
+  } catch (err) {
+    console.error(err);
+    req.flash('error', 'Failed to upload image');
+    res.redirect('/profile');
+  }
 });
 
 // GET logout handle
