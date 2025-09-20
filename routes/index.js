@@ -10,6 +10,11 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
+// Passport setup
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+passport.use(User.createStrategy());  // ✅ Fix: use createStrategy instead of authenticate()
+
 // Middleware to check if user is authenticated (for protected routes)
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
@@ -19,13 +24,10 @@ function ensureAuthenticated(req, res, next) {
   res.redirect('/login');
 }
 
-// Middleware to check if user is logged in (for conditional redirects)
+// Middleware to check if user is logged in (for conditional checks, not blocking)
 function isLoggedIn(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  // if not logged in, just continue without blocking
-  next();
+  // just passes through, but you can check inside routes
+  return next();
 }
 
 // Multer setup for profile image uploads
@@ -64,7 +66,11 @@ router.get('/', (req, res) => {
 // GET register page
 router.get('/register', isLoggedIn, (req, res) => {
   if (req.isAuthenticated()) {
-    return res.redirect('/dashboard');
+    return res.render('register', { 
+      title: 'Register', 
+      page: 'register',
+      message: 'You are already registered and logged in!'
+    });
   }
   res.render('register', { title: 'Register', page: 'register' });
 });
@@ -88,7 +94,11 @@ router.post('/register', async (req, res) => {
 // GET login page
 router.get('/login', isLoggedIn, (req, res) => {
   if (req.isAuthenticated()) {
-    return res.redirect('/dashboard');
+    return res.render('login', { 
+      title: 'Login', 
+      page: 'login',
+      message: 'You are already logged in!' 
+    });
   }
   res.render('login', { title: 'Login', page: 'login' });
 });
@@ -101,7 +111,7 @@ router.post('/login', passport.authenticate('local', {
 }));
 
 // GET dashboard page (protected)
-router.get('/dashboard', isLoggedIn, async (req, res) => {
+router.get('/dashboard', ensureAuthenticated, async (req, res) => {
   try {
     const totalAttendees = await Attendee.countDocuments({});
     const totalSpeakers = await Speaker.countDocuments({});
@@ -124,12 +134,12 @@ router.get('/dashboard', isLoggedIn, async (req, res) => {
 });
 
 // GET profile page (protected)
-router.get('/profile',isLoggedIn,(req, res) => {
+router.get('/profile', ensureAuthenticated, (req, res) => {
   res.render('profile', { title: 'Profile', page: 'profile', user: req.user });
 });
 
 // POST profile image upload (protected)
-router.post('/upload-profile',isLoggedIn,ensureAuthenticated, upload.single('profileImage'), async (req, res) => {
+router.post('/upload-profile', ensureAuthenticated, upload.single('profileImage'), async (req, res) => {
   try {
     if (!req.file) {
       req.flash('error', 'Please select an image to upload');
