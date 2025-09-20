@@ -13,6 +13,7 @@ const User = require('./models/user');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
+const attendeesRouter = require('./routes/attendees');
 
 const app = express();
 
