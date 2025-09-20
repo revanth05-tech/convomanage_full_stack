@@ -7,9 +7,29 @@
        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
 
     <!-- Back Button -->
-    <button onclick="window.location.href='/dashboard'" class="absolute top-4 left-4 text-white hover:text-gray-300 transition text-2xl">
-      ⬅️
-    </button>
+    <button 
+  onclick="window.location.href='/dashboard'" 
+  class="absolute top-4 left-4 px-4 py-2 rounded-xl 
+         bg-gradient-to-r from-indigo-500 to-purple-600 
+         text-white font-medium shadow-lg backdrop-blur-md 
+         border border-white/20 
+         hover:from-indigo-600 hover:to-purple-700 
+         hover:scale-105 transition-all duration-300">
+  ⬅️ Back
+</button>
+    <!-- Logout Button -->
+    <button 
+  onclick="window.location.href='/logout'" 
+  class="absolute top-4 right-4 px-4 py-2 rounded-xl 
+         bg-gradient-to-r from-indigo-500 to-purple-600 
+         text-white font-medium shadow-lg backdrop-blur-md 
+         border border-white/20 
+         hover:from-indigo-600 hover:to-purple-700 
+         hover:scale-105 transition-all duration-300">
+  🚪 Logout
+</button>
+
+
 
     <!-- Profile Image -->
     <div class="relative">
