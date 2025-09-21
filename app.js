@@ -73,7 +73,7 @@ const sessionConfig = {
     autoRemove: 'native',
     ttl: 24 * 60 * 60 // = 1 day
   }),
-  name: 'sessionId', // Don't use default connect.sid
+  name: 'sessionId', 
   cookie: {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
