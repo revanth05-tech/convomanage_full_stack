@@ -275,3 +275,18 @@ function setupDeleteListeners() {
         }
     });
 }
+
+window.showDashboard = function(sectionId) {
+    // Hide all dashboard sections
+    document.querySelectorAll('.dashboard').forEach(d => d.classList.remove('active'));
+
+    // Show the selected section
+    const activeSection = document.getElementById(sectionId);
+    if (activeSection) activeSection.classList.add('active');
+
+    // Update active button style
+    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+    const clickedBtn = Array.from(document.querySelectorAll('.nav-btn'))
+        .find(btn => btn.getAttribute('onclick') === `showDashboard('${sectionId}')`);
+    if (clickedBtn) clickedBtn.classList.add('active');
+};
