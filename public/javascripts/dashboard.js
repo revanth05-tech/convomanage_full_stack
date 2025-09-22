@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
     fetchSpeakers();
     fetchSessions();
     updateDashboard();
+    setupDeleteListeners();
 });
 
 // ---------------- FETCH FUNCTIONS ----------------
@@ -63,237 +64,107 @@ async function fetchSessions() {
 }
 
 // ---------------- FORM SUBMISSIONS ----------------
-document.getElementById('attendeeForm')?.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    try {
-        const formData = new FormData(this);
-        const response = await fetch('/api/attendees', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(Object.fromEntries(formData))
-        });
-        
-        if (!response.ok) throw new Error('Network response was not ok');
-        
-        await fetchAttendees();
-        this.reset();
-        showAlert('attendeeAlert', 'success', 'Attendee added successfully!');
-    } catch (error) {
-        showAlert('attendeeAlert', 'error', 'Failed to add attendee.');
-        console.error('Error:', error);
-    }
-});
+async function handleFormSubmit(formId, apiPath, fetchFunction, alertId, successMsg, errorMsg) {
+    const form = document.getElementById(formId);
+    form?.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        try {
+            const formData = new FormData(this);
+            const response = await fetch(apiPath, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(Object.fromEntries(formData))
+            });
 
-document.getElementById('speakerForm')?.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    try {
-        const formData = new FormData(this);
-        const response = await fetch('/api/speakers', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(Object.fromEntries(formData))
-        });
-        
-        if (!response.ok) throw new Error('Network response was not ok');
-        
-        await fetchSpeakers();
-        this.reset();
-        showAlert('speakerAlert', 'success', 'Speaker added successfully!');
-    } catch (error) {
-        showAlert('speakerAlert', 'error', 'Failed to add speaker.');
-        console.error('Error:', error);
-    }
-});
+            if (!response.ok) throw new Error('Network response was not ok');
+            
+            await fetchFunction();
+            this.reset();
+            showAlert(alertId, 'success', successMsg);
+        } catch (error) {
+            showAlert(alertId, 'error', errorMsg);
+            console.error('Error:', error);
+        }
+    });
+}
 
-document.getElementById('sessionForm')?.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    try {
-        const formData = new FormData(this);
-        const response = await fetch('/api/sessions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(Object.fromEntries(formData))
-        });
-        
-        if (!response.ok) throw new Error('Network response was not ok');
-        
-        await fetchSessions();
-        this.reset();
-        showAlert('sessionAlert', 'success', 'Session added successfully!');
-    } catch (error) {
-        showAlert('sessionAlert', 'error', 'Failed to add session.');
-        console.error('Error:', error);
-    }
-});
+handleFormSubmit('attendeeForm', '/api/attendees', fetchAttendees, 'attendeeAlert', 'Attendee added successfully!', 'Failed to add attendee.');
+handleFormSubmit('speakerForm', '/api/speakers', fetchSpeakers, 'speakerAlert', 'Speaker added successfully!', 'Failed to add speaker.');
+handleFormSubmit('sessionForm', '/api/sessions', fetchSessions, 'sessionAlert', 'Session added successfully!', 'Failed to add session.');
+handleFormSubmit('conferenceForm', '/api/conferences', fetchConferences, 'conferenceAlert', 'Conference added successfully!', 'Failed to add conference.');
 
-document.getElementById('conferenceForm')?.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    try {
-        const formData = new FormData(this);
-        const response = await fetch('/api/conferences', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(Object.fromEntries(formData))
-        });
-        
-        if (!response.ok) throw new Error('Network response was not ok');
-        
-        await fetchConferences();
-        this.reset();
-        showAlert('conferenceAlert', 'success', 'Conference added successfully!');
-    } catch (error) {
-        showAlert('conferenceAlert', 'error', 'Failed to add conference.');
-        console.error('Error:', error);
-    }
-});
-
-// ---------------- DELETE FUNCTIONS ----------------
+// ---------------- DELETE FUNCTIONS (GLOBAL) ----------------
 async function deleteAttendee(id) {
     if (!confirm('Are you sure you want to delete this attendee?')) return;
-    
     try {
-        const response = await fetch(`/api/attendees/${id}`, {
-            method: 'DELETE'
-        });
+        const response = await fetch(`/api/attendees/${id}`, { method: 'DELETE' });
         if (!response.ok) throw new Error('Network response was not ok');
         await fetchAttendees();
         showAlert('attendeeAlert', 'success', 'Attendee deleted successfully!');
     } catch (error) {
         showAlert('attendeeAlert', 'error', 'Failed to delete attendee.');
-        console.error('Error:', error);
-    }
-}
-
-async function deleteConference(id) {
-    if (!confirm('Are you sure you want to delete this conference?')) return;
-    
-    try {
-        const response = await fetch(`/api/conferences/${id}`, {
-            method: 'DELETE'
-        });
-        if (!response.ok) throw new Error('Network response was not ok');
-        await fetchConferences();
-        showAlert('conferenceAlert', 'success', 'Conference deleted successfully!');
-    } catch (error) {
-        showAlert('conferenceAlert', 'error', 'Failed to delete conference.');
-        console.error('Error:', error);
+        console.error(error);
     }
 }
 
 async function deleteSpeaker(id) {
     if (!confirm('Are you sure you want to delete this speaker?')) return;
-    
     try {
-        const response = await fetch(`/api/speakers/${id}`, {
-            method: 'DELETE'
-        });
+        const response = await fetch(`/api/speakers/${id}`, { method: 'DELETE' });
         if (!response.ok) throw new Error('Network response was not ok');
         await fetchSpeakers();
         showAlert('speakerAlert', 'success', 'Speaker deleted successfully!');
     } catch (error) {
         showAlert('speakerAlert', 'error', 'Failed to delete speaker.');
-        console.error('Error:', error);
+        console.error(error);
     }
 }
 
 async function deleteSession(id) {
     if (!confirm('Are you sure you want to delete this session?')) return;
-    
     try {
-        const response = await fetch(`/api/sessions/${id}`, {
-            method: 'DELETE'
-        });
+        const response = await fetch(`/api/sessions/${id}`, { method: 'DELETE' });
         if (!response.ok) throw new Error('Network response was not ok');
         await fetchSessions();
         showAlert('sessionAlert', 'success', 'Session deleted successfully!');
     } catch (error) {
         showAlert('sessionAlert', 'error', 'Failed to delete session.');
-        console.error('Error:', error);
+        console.error(error);
+    }
+}
+
+async function deleteConference(id) {
+    if (!confirm('Are you sure you want to delete this conference?')) return;
+    try {
+        const response = await fetch(`/api/conferences/${id}`, { method: 'DELETE' });
+        if (!response.ok) throw new Error('Network response was not ok');
+        await fetchConferences();
+        showAlert('conferenceAlert', 'success', 'Conference deleted successfully!');
+    } catch (error) {
+        showAlert('conferenceAlert', 'error', 'Failed to delete conference.');
+        console.error(error);
     }
 }
 
 // ---------------- HELPER FUNCTIONS ----------------
 function populateDropdowns() {
-    // Populate conference dropdowns
-    const conferenceSelects = document.querySelectorAll('.conference-select');
-    conferenceSelects.forEach(select => {
-        select.innerHTML = `
-            <option value="">Select Conference</option>
-            ${conferences.map(c => `
-                <option value="${c._id}">${c.name}</option>
-            `).join('')}
-        `;
+    document.querySelectorAll('.conference-select').forEach(select => {
+        select.innerHTML = `<option value="">Select Conference</option>${conferences.map(c => `<option value="${c._id}">${c.name}</option>`).join('')}`;
     });
-
-    // Populate speaker dropdowns
-    const speakerSelects = document.querySelectorAll('.speaker-select');
-    speakerSelects.forEach(select => {
-        select.innerHTML = `
-            <option value="">Select Speaker</option>
-            ${speakers.map(s => `
-                <option value="${s._id}">${s.name}</option>
-            `).join('')}
-        `;
+    document.querySelectorAll('.speaker-select').forEach(select => {
+        select.innerHTML = `<option value="">Select Speaker</option>${speakers.map(s => `<option value="${s._id}">${s.name}</option>`).join('')}`;
     });
 }
 
 function showAlert(containerId, type, message) {
     const container = document.getElementById(containerId);
     if (!container) return;
-
     const alertDiv = document.createElement('div');
     alertDiv.className = `alert alert-${type}`;
     alertDiv.textContent = message;
-
     container.innerHTML = '';
     container.appendChild(alertDiv);
-
-    setTimeout(() => {
-        alertDiv.remove();
-    }, 5000);
-}
-
-// ---------------- UPDATE FUNCTIONS ----------------
-function updateDashboard() {
-    updateDashboardCard('totalAttendees', attendees.length);
-    updateDashboardCard('totalSpeakers', speakers.length);
-    updateDashboardCard('totalSessions', sessions.length);
-    updateDashboardCard('totalConferences', conferences.length);
-    updateDashboardCard('totalRevenue', `$${calculateTotalRevenue()}`);
-    updateDashboardCard('registrationRate', `${calculateRegistrationRate()}%`);
-}
-
-function updateDashboardCard(id, value) {
-    const card = document.querySelector(`#${id} .number`);
-    if (card) card.textContent = value;
-}
-
-function calculateTotalRevenue() {
-    const attendeeRevenue = attendees.reduce((total, a) => {
-        const ticketPrice = a.ticketType === 'vip' ? 500 : 
-                          a.ticketType === 'regular' ? 250 : 100;
-        return total + ticketPrice;
-    }, 0);
-
-    const speakerFees = speakers.reduce((total, s) => total + (parseFloat(s.fee) || 0), 0);
-    
-    return (attendeeRevenue - speakerFees).toLocaleString();
-}
-
-function calculateRegistrationRate() {
-    const totalCapacity = conferences.reduce((total, c) => total + (parseInt(c.capacity) || 0), 0);
-    if (totalCapacity === 0) return 0;
-    
-    const registrationRate = (attendees.length / totalCapacity) * 100;
-    return Math.round(registrationRate);
+    setTimeout(() => alertDiv.remove(), 5000);
 }
 
 function handleFetchError(error, entity) {
@@ -301,36 +172,51 @@ function handleFetchError(error, entity) {
     showAlert(`${entity}Alert`, 'error', `Failed to load ${entity}. Please try again.`);
 }
 
-// ---------------- TABLE UPDATES ----------------
-function updateTables() {
-    updateAttendeesTable();
-    updateConferencesTable();
-    updateSpeakersTable();
-    updateSessionsTable();
+// ---------------- UPDATE DASHBOARD ----------------
+function updateDashboard() {
+    document.getElementById('totalAttendees')?.textContent = attendees.length;
+    document.getElementById('totalSpeakers')?.textContent = speakers.length;
+    document.getElementById('totalSessions')?.textContent = sessions.length;
+    document.getElementById('totalConferences')?.textContent = conferences.length;
+    document.getElementById('totalRevenue')?.textContent = `$${calculateTotalRevenue()}`;
+    document.getElementById('registrationRate')?.textContent = `${calculateRegistrationRate()}%`;
 }
 
+function calculateTotalRevenue() {
+    const attendeeRevenue = attendees.reduce((total, a) => {
+        const ticketPrice = a.ticketType === 'vip' ? 500 : a.ticketType === 'premium' ? 250 : 100;
+        return total + ticketPrice;
+    }, 0);
+    const speakerFees = speakers.reduce((total, s) => total + (parseFloat(s.fee) || 0), 0);
+    return (attendeeRevenue - speakerFees).toLocaleString();
+}
+
+function calculateRegistrationRate() {
+    const totalCapacity = conferences.reduce((total, c) => total + (parseInt(c.capacity) || 0), 0);
+    if (totalCapacity === 0) return 0;
+    return Math.round((attendees.length / totalCapacity) * 100);
+}
+
+// ---------------- TABLE UPDATES ----------------
 function updateAttendeesTable() {
-    const tbody = document.querySelector('#attendeesTable tbody');
+    const tbody = document.getElementById('attendeesTableBody');
     if (!tbody) return;
-    
     tbody.innerHTML = attendees.map(a => `
         <tr>
             <td>${a.name}</td>
             <td>${a.email}</td>
             <td>${a.company || 'N/A'}</td>
             <td>${conferences.find(c => c._id === a.conference)?.name || 'N/A'}</td>
+            <td>${a.ticketType}</td>
             <td><span class="status-badge status-${a.status}">${a.status}</span></td>
-            <td>
-                <button onclick="deleteAttendee('${a._id}')" class="btn btn-danger">Delete</button>
-            </td>
+            <td><button class="btn btn-danger delete-btn" data-id="${a._id}" data-type="attendee">Delete</button></td>
         </tr>
     `).join('');
 }
 
 function updateSpeakersTable() {
-    const tbody = document.querySelector('#speakersTable tbody');
+    const tbody = document.getElementById('speakersTableBody');
     if (!tbody) return;
-
     tbody.innerHTML = speakers.map(s => `
         <tr>
             <td>${s.name}</td>
@@ -338,17 +224,14 @@ function updateSpeakersTable() {
             <td>${s.company || 'N/A'}</td>
             <td>${s.expertise}</td>
             <td>$${s.fee}</td>
-            <td>
-                <button onclick="deleteSpeaker('${s._id}')" class="btn btn-danger">Delete</button>
-            </td>
+            <td><button class="btn btn-danger delete-btn" data-id="${s._id}" data-type="speaker">Delete</button></td>
         </tr>
     `).join('');
 }
 
 function updateSessionsTable() {
-    const tbody = document.querySelector('#sessionsTable tbody');
+    const tbody = document.getElementById('sessionsTableBody');
     if (!tbody) return;
-
     tbody.innerHTML = sessions.map(s => `
         <tr>
             <td>${s.title}</td>
@@ -357,17 +240,14 @@ function updateSessionsTable() {
             <td>${s.date}</td>
             <td>${s.startTime}</td>
             <td>${s.duration} min</td>
-            <td>
-                <button onclick="deleteSession('${s._id}')" class="btn btn-danger">Delete</button>
-            </td>
+            <td><button class="btn btn-danger delete-btn" data-id="${s._id}" data-type="session">Delete</button></td>
         </tr>
     `).join('');
 }
 
 function updateConferencesTable() {
-    const tbody = document.querySelector('#conferencesTable tbody');
+    const tbody = document.getElementById('conferencesTableBody');
     if (!tbody) return;
-
     tbody.innerHTML = conferences.map(c => `
         <tr>
             <td>${c.name}</td>
@@ -375,10 +255,23 @@ function updateConferencesTable() {
             <td>${c.startDate}</td>
             <td>${c.endDate}</td>
             <td>${c.capacity}</td>
+            <td>${attendees.filter(a => a.conference === c._id).length}</td>
             <td><span class="status-badge status-${c.status}">${c.status}</span></td>
-            <td>
-                <button onclick="deleteConference('${c._id}')" class="btn btn-danger">Delete</button>
-            </td>
+            <td><button class="btn btn-danger delete-btn" data-id="${c._id}" data-type="conference">Delete</button></td>
         </tr>
     `).join('');
+}
+
+// ---------------- DELETE EVENT DELEGATION ----------------
+function setupDeleteListeners() {
+    document.addEventListener('click', async (e) => {
+        if (e.target.classList.contains('delete-btn')) {
+            const id = e.target.dataset.id;
+            const type = e.target.dataset.type;
+            if (type === 'attendee') await deleteAttendee(id);
+            else if (type === 'speaker') await deleteSpeaker(id);
+            else if (type === 'session') await deleteSession(id);
+            else if (type === 'conference') await deleteConference(id);
+        }
+    });
 }
