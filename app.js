@@ -14,6 +14,7 @@ const User = require('./models/user');
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const attendeesRouter = require('./routes/attendees');
+const conferencesRouter = require('./routes/conferences');
 
 const app = express();
 
@@ -58,7 +59,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(process.env.COOKIE_SECRET || 'cookie-secret'));
 app.use(express.static(path.join(__dirname, 'public')));
-
+app.use('/attendees', attendeesRouter);
+app.use('/conferences', conferencesRouter);
 // Session configuration
 const sessionConfig = {
   secret: process.env.SESSION_SECRET || 'session-secret',
