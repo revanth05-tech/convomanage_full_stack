@@ -79,74 +79,46 @@
             </div>
 
             <!-- Attendees Management -->
-            <div id="attendees" class="dashboard">
-                <div class="form-section">
-                    <h2>Attendee Registration</h2>
-                    <div id="attendeeAlert"></div>
-                    <form id="attendeeForm">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="attendeeName">Full Name *</label>
-                                <input type="text" id="attendeeName" name="name" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="attendeeEmail">Email Address *</label>
-                                <input type="email" id="attendeeEmail" name="email" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="attendeeCompany">Company/Organization</label>
-                                <input type="text" id="attendeeCompany" name="company">
-                            </div>
-                            <div class="form-group">
-                                <label for="attendeeTitle">Job Title</label>
-                                <input type="text" id="attendeeTitle" name="title">
-                            </div>
-                            <div class="form-group">
-                                <label for="attendeeConference">Conference</label>
-                                <select id="attendeeConference" name="conference" required>
-                                    <option value="">Select Conference</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="attendeeTicket">Ticket Type</label>
-                                <select id="attendeeTicket" name="ticketType">
-                                    <option value="standard">Standard</option>
-                                    <option value="premium">Premium</option>
-                                    <option value="vip">VIP</option>
-                                </select>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn">Register Attendee</button>
-                    </form>
+        <div id="attendees" class="dashboard">
+    <div class="form-section">
+        <h2>Attendee Registration</h2>
+        <div id="attendeeAlert"></div>
+        <form id="attendeeForm" method="POST" action="/attendees">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="attendeeName">Full Name *</label>
+                    <input type="text" id="attendeeName" name="name" required>
                 </div>
-
-                <div class="search-filter">
-                    <input type="text" id="attendeeSearch" placeholder="Search attendees..." onkeyup="filterAttendees()">
-                    <select id="attendeeStatusFilter" onchange="filterAttendees()">
-                        <option value="">All Status</option>
-                        <option value="confirmed">Confirmed</option>
-                        <option value="pending">Pending</option>
-                        <option value="cancelled">Cancelled</option>
+                <div class="form-group">
+                    <label for="attendeeEmail">Email Address *</label>
+                    <input type="email" id="attendeeEmail" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="attendeeCompany">Company/Organization</label>
+                    <input type="text" id="attendeeCompany" name="company">
+                </div>
+                <div class="form-group">
+                    <label for="attendeeTitle">Job Title</label>
+                    <input type="text" id="attendeeTitle" name="title">
+                </div>
+                <div class="form-group">
+                    <label for="attendeeConference">Conference</label>
+                    <select id="attendeeConference" name="conference" required>
+                        <option value="">Select Conference</option>
                     </select>
                 </div>
-
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Company</th>
-                            <th>Conference</th>
-                            <th>Ticket Type</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="attendeesTableBody">
-                    </tbody>
-                </table>
+                <div class="form-group">
+                    <label for="attendeeTicket">Ticket Type</label>
+                    <select id="attendeeTicket" name="ticketType">
+                        <option value="standard">Standard</option>
+                        <option value="premium">Premium</option>
+                        <option value="vip">VIP</option>
+                    </select>
+                </div>
             </div>
-
+            <button type="submit" class="btn">Register Attendee</button>
+        </form>
+    </div>
             <!-- Speakers Management -->
             <div id="speakers" class="dashboard">
                 <div class="form-section">
