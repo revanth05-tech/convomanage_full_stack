@@ -1,20 +1,22 @@
+
 const express = require('express');
 const router = express.Router();
 const Attendee = require('../models/attendee');
-const Conference = require('../models/conference'); // For populating conference dropdown
+const Conference = require('../models/conference');
 
-// GET all attendees (for table)
+// GET all attendees (render EJS)
 router.get('/', async (req, res) => {
   try {
     const attendees = await Attendee.find().populate('conference');
-    res.json(attendees); // return JSON for frontend JS
+    const conferences = await Conference.find(); // for dropdown
+    res.render('attendees', { attendees, conferences });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).send(err.message);
   }
 });
 
 // POST new attendee (form submission)
-router.post('/add', async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const { name, email, company, title, conference, ticketType } = req.body;
     const newAttendee = new Attendee({
@@ -26,30 +28,9 @@ router.post('/add', async (req, res) => {
       ticketType
     });
     await newAttendee.save();
-    res.json({ success: true, message: 'Attendee registered successfully!' });
+    res.redirect('/attendees'); // after success go back to list
   } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
-  }
-});
-
-// Optional: GET attendee by ID
-router.get('/:id', async (req, res) => {
-  try {
-    const attendee = await Attendee.findById(req.params.id).populate('conference');
-    if (!attendee) return res.status(404).json({ error: 'Attendee not found' });
-    res.json(attendee);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// Optional: DELETE attendee
-router.delete('/:id', async (req, res) => {
-  try {
-    await Attendee.findByIdAndDelete(req.params.id);
-    res.json({ success: true, message: 'Attendee deleted' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).send(err.message);
   }
 });
 
