@@ -452,73 +452,109 @@
             </div>
 
             <!-- Attendees Management -->
-            <div id="attendees" class="dashboard">
-                <div class="form-section">
-                    <h2>Attendee Registration</h2>
-                    <div id="attendeeAlert"></div>
-                    <form id="attendeeForm">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="attendeeName">Full Name *</label>
-                                <input type="text" id="attendeeName" name="name" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="attendeeEmail">Email Address *</label>
-                                <input type="email" id="attendeeEmail" name="email" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="attendeeCompany">Company/Organization</label>
-                                <input type="text" id="attendeeCompany" name="company">
-                            </div>
-                            <div class="form-group">
-                                <label for="attendeeTitle">Job Title</label>
-                                <input type="text" id="attendeeTitle" name="title">
-                            </div>
-                            <div class="form-group">
-                                <label for="attendeeConference">Conference</label>
-                                <select id="attendeeConference" name="conference" required>
-                                    <option value="">Select Conference</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="attendeeTicket">Ticket Type</label>
-                                <select id="attendeeTicket" name="ticketType">
-                                    <option value="standard">Standard</option>
-                                    <option value="premium">Premium</option>
-                                    <option value="vip">VIP</option>
-                                </select>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn">Register Attendee</button>
-                    </form>
-                </div>
+          <div id="attendees" class="dashboard">
+  <div class="form-section">
+    <h2>Attendee Registration</h2>
 
-                <div class="search-filter">
-                    <input type="text" id="attendeeSearch" placeholder="Search attendees..." onkeyup="filterAttendees()">
-                    <select id="attendeeStatusFilter" onchange="filterAttendees()">
-                        <option value="">All Status</option>
-                        <option value="confirmed">Confirmed</option>
-                        <option value="pending">Pending</option>
-                        <option value="cancelled">Cancelled</option>
-                    </select>
-                </div>
+    <% if (success && success.length > 0) { %>
+      <div class="alert alert-success"><%= success %></div>
+    <% } %>
+    <% if (error && error.length > 0) { %>
+      <div class="alert alert-danger"><%= error %></div>
+    <% } %>
 
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Company</th>
-                            <th>Conference</th>
-                            <th>Ticket Type</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="attendeesTableBody">
-                    </tbody>
-                </table>
-            </div>
+    <!-- Form wired with POST method to /attendees route -->
+    <form id="attendeeForm" method="POST" action="/attendees">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="attendeeName">Full Name *</label>
+          <input type="text" id="attendeeName" name="name" required>
+        </div>
+
+        <div class="form-group">
+          <label for="attendeeEmail">Email Address *</label>
+          <input type="email" id="attendeeEmail" name="email" required>
+        </div>
+
+        <div class="form-group">
+          <label for="attendeeCompany">Company/Organization</label>
+          <input type="text" id="attendeeCompany" name="company">
+        </div>
+
+        <div class="form-group">
+          <label for="attendeeTitle">Job Title</label>
+          <input type="text" id="attendeeTitle" name="title">
+        </div>
+
+        <div class="form-group">
+          <label for="attendeeConference">Conference *</label>
+          <select id="attendeeConference" name="conference" required>
+            <option value="">Select Conference</option>
+            <% conferences.forEach(conf => { %>
+              <option value="<%= conf._id %>"><%= conf.name %></option>
+            <% }) %>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="attendeeTicket">Ticket Type</label>
+          <select id="attendeeTicket" name="ticketType">
+            <option value="standard">Standard</option>
+            <option value="premium">Premium</option>
+            <option value="vip">VIP</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="submit" class="btn">Register Attendee</button>
+    </form>
+  </div>
+
+  <!-- Search & filter -->
+  <div class="search-filter">
+    <input type="text" id="attendeeSearch" placeholder="Search attendees..." onkeyup="filterAttendees()">
+    <select id="attendeeStatusFilter" onchange="filterAttendees()">
+      <option value="">All Status</option>
+      <option value="confirmed">Confirmed</option>
+      <option value="pending">Pending</option>
+      <option value="cancelled">Cancelled</option>
+    </select>
+  </div>
+
+  <!-- Attendees Table -->
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Company</th>
+        <th>Conference</th>
+        <th>Ticket Type</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% attendees.forEach(a => { %>
+        <tr>
+          <td><%= a.name %></td>
+          <td><%= a.email %></td>
+          <td><%= a.company %></td>
+          <td><%= a.conference ? a.conference.name : '' %></td>
+          <td><%= a.ticketType %></td>
+          <td><%= a.status || 'pending' %></td>
+          <td>
+            <!-- Delete button wired to POST delete route -->
+            <form method="POST" action="/attendees/<%= a._id %>/delete" style="display:inline;">
+              <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
 
             <!-- Speakers Management -->
             <div id="speakers" class="dashboard">

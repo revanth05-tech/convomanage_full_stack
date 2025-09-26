@@ -79,75 +79,96 @@
             </div>
 
             <!-- Attendees Management -->
-                   <div id="attendees" class="dashboard">
-    <div class="form-section">
-        <h2>Attendee Registration</h2>
-        <form id="attendeeForm" method="POST" action="/attendees">
-            <div class="form-grid">
-                <div class="form-group">
-                    <label for="attendeeName">Full Name *</label>
-                    <input type="text" id="attendeeName" name="name" required>
-                </div>
-                <div class="form-group">
-                    <label for="attendeeEmail">Email Address *</label>
-                    <input type="email" id="attendeeEmail" name="email" required>
-                </div>
-                <div class="form-group">
-                    <label for="attendeeCompany">Company/Organization</label>
-                    <input type="text" id="attendeeCompany" name="company">
-                </div>
-                <div class="form-group">
-                    <label for="attendeeTitle">Job Title</label>
-                    <input type="text" id="attendeeTitle" name="title">
-                </div>
-                <div class="form-group">
-                    <label for="attendeeConference">Conference</label>
-                    <select id="attendeeConference" name="conference" required>
-                        <option value="">Select Conference</option>
-                        <% conferences.forEach(conf => { %>
-                        <option value="<%= conf._id %>"><%= conf.name %></option>
-                        <% }) %>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="attendeeTicket">Ticket Type</label>
-                    <select id="attendeeTicket" name="ticketType">
-                        <option value="standard">Standard</option>
-                        <option value="premium">Premium</option>
-                        <option value="vip">VIP</option>
-                    </select>
-                </div>
-            </div>
-            <button type="submit" class="btn">Register Attendee</button>
-        </form>
-    </div>
+   <div id="attendees" class="dashboard">
+  <div class="form-section">
+    <h2>Attendee Registration</h2>
 
-    <h2>All Attendees</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Name</th><th>Email</th><th>Company</th><th>Conference</th><th>Ticket</th><th>Status</th><th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% attendees.forEach(a => { %>
-            <tr>
-                <td><%= a.name %></td>
-                <td><%= a.email %></td>
-                <td><%= a.company %></td>
-                <td><%= a.conference ? a.conference.name : '' %></td>
-                <td><%= a.ticketType %></td>
-                <td><%= a.status %></td>
-                <td>
-                    <form method="POST" action="/attendees/<%= a._id %>/delete" style="display:inline;">
-                        <button type="submit" class="btn btn-danger">Delete</button>
-                    </form>
-                </td>
-            </tr>
+    <% if (success && success.length > 0) { %>
+      <div class="alert alert-success"><%= success %></div>
+    <% } %>
+    <% if (error && error.length > 0) { %>
+      <div class="alert alert-danger"><%= error %></div>
+    <% } %>
+
+    <form id="attendeeForm" method="POST" action="/attendees">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="attendeeName">Full Name *</label>
+          <input type="text" id="attendeeName" name="name" required>
+        </div>
+
+        <div class="form-group">
+          <label for="attendeeEmail">Email Address *</label>
+          <input type="email" id="attendeeEmail" name="email" required>
+        </div>
+
+        <div class="form-group">
+          <label for="attendeeCompany">Company/Organization</label>
+          <input type="text" id="attendeeCompany" name="company">
+        </div>
+
+        <div class="form-group">
+          <label for="attendeeTitle">Job Title</label>
+          <input type="text" id="attendeeTitle" name="title">
+        </div>
+
+        <div class="form-group">
+          <label for="attendeeConference">Conference *</label>
+          <select id="attendeeConference" name="conference" required>
+            <option value="">Select Conference</option>
+            <% conferences.forEach(conf => { %>
+              <option value="<%= conf._id %>"><%= conf.name %></option>
             <% }) %>
-        </tbody>
-    </table>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="attendeeTicket">Ticket Type</label>
+          <select id="attendeeTicket" name="ticketType">
+            <option value="standard">Standard</option>
+            <option value="premium">Premium</option>
+            <option value="vip">VIP</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="submit" class="btn">Register Attendee</button>
+    </form>
+  </div>
+
+  <h2>All Attendees</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Company</th>
+        <th>Conference</th>
+        <th>Ticket</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% attendees.forEach(a => { %>
+        <tr>
+          <td><%= a.name %></td>
+          <td><%= a.email %></td>
+          <td><%= a.company %></td>
+          <td><%= a.conference ? a.conference.name : '' %></td>
+          <td><%= a.ticketType %></td>
+          <td><%= a.status || 'pending' %></td>
+          <td>
+            <form method="POST" action="/attendees/<%= a._id %>/delete" style="display:inline;">
+              <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
 </div>
+
 
             <!-- Speakers Management -->
             <div id="speakers" class="dashboard">
