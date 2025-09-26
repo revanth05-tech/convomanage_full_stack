@@ -10,33 +10,24 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// Passport setup
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
-passport.use(User.createStrategy());  // ✅ Fix: use createStrategy instead of authenticate()
+passport.use(User.createStrategy());
 
-// Middleware to check if user is authenticated (for protected routes)
 function ensureAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
-  }
+  if (req.isAuthenticated()) return next();
   req.flash('error', 'Please log in to view that resource');
   res.redirect('/login');
 }
 
-// Middleware to check if user is logged in (for conditional checks, not blocking)
 function isLoggedIn(req, res, next) {
-  // just passes through, but you can check inside routes
   return next();
 }
 
-// Multer setup for profile image uploads
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const uploadDir = path.join(__dirname, '..', 'public', 'images', 'uploads');
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
+    if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
     cb(null, uploadDir);
   },
   filename: function (req, file, cb) {
@@ -46,24 +37,18 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith('image/')) {
-    cb(null, true);
-  } else {
-    cb(new Error('Only image files are allowed!'), false);
-  }
+  if (file.mimetype.startsWith('image/')) cb(null, true);
+  else cb(new Error('Only image files are allowed!'), false);
 };
 
 const upload = multer({ storage, fileFilter });
 
-// Serve uploads folder as static
 router.use('/images/uploads', express.static(path.join(__dirname, '..', 'public', 'images', 'uploads')));
 
-// GET home page
 router.get('/', (req, res) => {
   res.render('index', { title: 'Welcome', page: 'home', user: req.user || null });
 });
 
-// GET register page
 router.get('/register', isLoggedIn, (req, res) => {
   if (req.isAuthenticated()) {
     return res.render('register', { 
@@ -75,7 +60,6 @@ router.get('/register', isLoggedIn, (req, res) => {
   res.render('register', { title: 'Register', page: 'register' });
 });
 
-// POST register handle
 router.post('/register', async (req, res) => {
   const { name, email, password } = req.body;
   try {
@@ -91,7 +75,6 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// GET login page
 router.get('/login', isLoggedIn, (req, res) => {
   if (req.isAuthenticated()) {
     return res.render('login', { 
@@ -103,14 +86,12 @@ router.get('/login', isLoggedIn, (req, res) => {
   res.render('login', { title: 'Login', page: 'login' });
 });
 
-// POST login handle
 router.post('/login', passport.authenticate('local', {
   successRedirect: '/dashboard',
   failureRedirect: '/login',
   failureFlash: true
 }));
 
-// GET dashboard page (protected)
 router.get('/dashboard', ensureAuthenticated, async (req, res) => {
   try {
     const totalAttendees = await Attendee.countDocuments({});
@@ -118,12 +99,17 @@ router.get('/dashboard', ensureAuthenticated, async (req, res) => {
     const totalSessions = await Session.countDocuments({});
     const totalConferences = await Conference.countDocuments({});
 
+    const conferences = await Conference.find();
+    const attendees = await Attendee.find({}).populate('conference');
+
     res.render('dashboard', { 
       currentUser: req.user,
       totalAttendees,
       totalSpeakers,
       totalSessions,
       totalConferences,
+      conferences,
+      attendees,
       page: 'dashboard'
     });
   } catch (err) {
@@ -133,12 +119,10 @@ router.get('/dashboard', ensureAuthenticated, async (req, res) => {
   }
 });
 
-// GET profile page (protected)
 router.get('/profile', ensureAuthenticated, (req, res) => {
   res.render('profile', { title: 'Profile', page: 'profile', user: req.user });
 });
 
-// POST profile image upload (protected)
 router.post('/upload-profile', ensureAuthenticated, upload.single('profileImage'), async (req, res) => {
   try {
     if (!req.file) {
@@ -156,10 +140,9 @@ router.post('/upload-profile', ensureAuthenticated, upload.single('profileImage'
   }
 });
 
-// GET logout handle
 router.get('/logout', (req, res, next) => {
   req.logout(function(err) {
-    if (err) { return next(err); }
+    if (err) return next(err);
     req.flash('success', 'You are logged out');
     res.redirect('/login');
   });

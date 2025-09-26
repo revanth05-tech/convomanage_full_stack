@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Conference = require('../models/conference');
 
+// GET all conferences
 router.get('/', async (req, res) => {
   try {
     const conferences = await Conference.find();
@@ -14,6 +15,7 @@ router.get('/', async (req, res) => {
   }
 });
 
+// POST new conference
 router.post('/', async (req, res) => {
   try {
     const { name, type, startDate, endDate, capacity, status, description } = req.body;
@@ -33,6 +35,7 @@ router.post('/', async (req, res) => {
   }
 });
 
+// GET single conference by ID
 router.get('/:id', async (req, res) => {
   try {
     const conference = await Conference.findById(req.params.id);
@@ -43,6 +46,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// DELETE conference
 router.post('/:id/delete', async (req, res) => {
   try {
     await Conference.findByIdAndDelete(req.params.id);
