@@ -1,36 +1,73 @@
 
+
 const express = require('express');
 const router = express.Router();
 const Attendee = require('../models/attendee');
 const Conference = require('../models/conference');
 
-// GET all attendees (render EJS)
+// GET all attendees (render dashboard.ejs)
 router.get('/', async (req, res) => {
   try {
     const attendees = await Attendee.find().populate('conference');
-    const conferences = await Conference.find(); // for dropdown
-    res.render('attendees', { attendees, conferences });
+    const conferences = await Conference.find();
+    res.render('dashboard', { attendees, conferences, success: '', error: '' });
   } catch (err) {
     res.status(500).send(err.message);
   }
 });
 
-// POST new attendee (form submission)
+// POST new attendee
 router.post('/', async (req, res) => {
   try {
     const { name, email, company, title, conference, ticketType } = req.body;
-    const newAttendee = new Attendee({
-      name,
-      email,
-      company,
-      title,
-      conference,
-      ticketType
-    });
+    const newAttendee = new Attendee({ name, email, company, title, conference, ticketType });
     await newAttendee.save();
-    res.redirect('/attendees'); // after success go back to list
+
+    const attendees = await Attendee.find().populate('conference');
+    const conferences = await Conference.find();
+
+    res.render('dashboard', {
+      attendees,
+      conferences,
+      success: '✅ Attendee Registered Successfully!',
+      error: ''
+    });
   } catch (err) {
-    res.status(500).send(err.message);
+    const attendees = await Attendee.find().populate('conference');
+    const conferences = await Conference.find();
+
+    res.render('dashboard', {
+      attendees,
+      conferences,
+      success: '',
+      error: '❌ Failed to register attendee!'
+    });
+  }
+});
+
+// DELETE attendee
+router.post('/:id/delete', async (req, res) => {
+  try {
+    await Attendee.findByIdAndDelete(req.params.id);
+    const attendees = await Attendee.find().populate('conference');
+    const conferences = await Conference.find();
+
+    res.render('dashboard', {
+      attendees,
+      conferences,
+      success: '🗑 Attendee deleted successfully!',
+      error: ''
+    });
+  } catch (err) {
+    const attendees = await Attendee.find().populate('conference');
+    const conferences = await Conference.find();
+
+    res.render('dashboard', {
+      attendees,
+      conferences,
+      success: '',
+      error: '❌ Failed to delete attendee!'
+    });
   }
 });
 
