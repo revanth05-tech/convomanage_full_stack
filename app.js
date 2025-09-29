@@ -44,6 +44,43 @@ mongoose.connection.on('disconnected', () => {
   console.log('MongoDB disconnected');
 });
 
+// MongoDB connection with graceful error handling
+let mongoConnected = false;
+
+mongoose.connect(process.env.DATABASE_URL || 'mongodb://127.0.0.1:27017/convomanage', mongoConfig)
+  .then(() => {
+    console.log('✅ Connected to MongoDB successfully');
+    mongoConnected = true;
+  })
+  .catch(err => {
+    console.error('❌ MongoDB connection failed:', err.message);
+    console.log('ℹ️  Application will continue without database functionality');
+    console.log('ℹ️  To fix this: Start MongoDB server or check your DATABASE_URL');
+    mongoConnected = false;
+  });
+
+// MongoDB connection event handlers
+mongoose.connection.on('error', err => {
+  console.error('MongoDB runtime error:', err.message);
+  mongoConnected = false;
+});
+
+mongoose.connection.on('disconnected', () => {
+  console.log('⚠️  MongoDB disconnected');
+  mongoConnected = false;
+});
+
+mongoose.connection.on('reconnected', () => {
+  console.log('✅ MongoDB reconnected');
+  mongoConnected = true;
+});
+
+// Middleware to check database connection
+app.use((req, res, next) => {
+  req.mongoConnected = mongoConnected;
+  next();
+});
+
 // Enable mongoose debug mode in development
 if (app.get('env') === 'development') {
   mongoose.set('debug', true);
