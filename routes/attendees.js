@@ -4,7 +4,7 @@ const Attendee = require('../models/attendee');
 const Conference = require('../models/conference');
 
 // GET attendee registration + list
-router.get('/', async (req, res) => {
+router.get('/attendees', async (req, res) => {
   try {
     const attendees = await Attendee.find().populate('conference');
     const conferences = await Conference.find();
@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
 });
 
 // POST new attendee
-router.post('/', async (req, res) => {
+router.post('/attendess', async (req, res) => {
   try {
     const { name, email, company, title, conference, ticketType } = req.body;
     const newAttendee = new Attendee({ name, email, company, title, conference, ticketType });

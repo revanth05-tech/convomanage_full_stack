@@ -135,8 +135,18 @@
       <button type="submit" class="btn">Register Attendee</button>
     </form>
   </div>
+  <div class="search-filter">
+    <input type="text" id="attendeeSearch" placeholder="Search Attendees..." onkeyup="filterAttendees()">
+    <select id="attendeeStatusFilter" onchange="filterAttendees()">
+        <option value="">All Status</option>
+        <option value="confirmed">Confirmed</option>
+        <option value="pending">Pending</option>
+        <option value="cancelled">Cancelled</option>
+    </select>
+  </div>
 
   <h2>All Attendees</h2>
+
   <table class="data-table">
     <thead>
       <tr>
@@ -149,7 +159,7 @@
         <th>Actions</th>
       </tr>
     </thead>
-    <tbody>
+    <tbody id="attendeesTableBody">
       <% attendees.forEach(a => { %>
         <tr>
           <td><%= a.name %></td>

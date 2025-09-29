@@ -133,5 +133,5 @@ app.use((err, req, res, next) => {
   res.render('error');
 });
 
-module.exports = app;9
+module.exports = app;
 
