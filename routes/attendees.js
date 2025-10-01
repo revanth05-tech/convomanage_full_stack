@@ -16,7 +16,7 @@ router.get('/attendees', async (req, res) => {
 });
 
 // POST new attendee
-router.post('/attendess', async (req, res) => {
+router.post('/attendees', async (req, res) => {
   try {
     const { name, email, company, title, conference, ticketType } = req.body;
     const newAttendee = new Attendee({ name, email, company, title, conference, ticketType });
@@ -25,10 +25,12 @@ router.post('/attendess', async (req, res) => {
     req.flash('success', '✅ Attendee Registered Successfully!');
     res.redirect('/attendees');
   } catch (err) {
+    console.error(err);
     req.flash('error', '❌ Failed to register attendee!');
     res.redirect('/attendees');
   }
 });
+
 
 // DELETE attendee
 router.post('/:id/delete', async (req, res) => {

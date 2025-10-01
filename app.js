@@ -1,174 +1,61 @@
-require('dotenv').config();
-const createError = require('http-errors');
 const express = require('express');
-const path = require('path');
-const cookieParser = require('cookie-parser');
-const logger = require('morgan');
-const mongoose = require('mongoose');
-const session = require('express-session');
-const MongoStore = require('connect-mongo');
-const passport = require('passport');
-const flash = require('connect-flash');
-const User = require('./models/user');
+const router = express.Router();
+const Attendee = require('../models/attendee');
+const Conference = require('../models/conference');
 
-const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
-const attendeesRouter = require('./routes/attendees');
-const conferencesRouter = require('./routes/conferences');
+// ✅ GET attendee registration + list
+router.get('/', async (req, res) => {
+  try {
+    const attendees = await Attendee.find().populate('conference');
+    const conferences = await Conference.find();
 
-const app = express();
-
-// MongoDB connection configuration
-const mongoConfig = {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 5000,
-  autoIndex: true,
-  maxPoolSize: 10
-};
-
-// MongoDB connection with error handling
-mongoose.connect(process.env.DATABASE_URL || 'mongodb://127.0.0.1:27017/convomanage', mongoConfig)
-  .then(() => console.log('Connected to MongoDB...'))
-  .catch(err => {
-    console.error('MongoDB connection error:', err);
-    process.exit(1);
-  });
-
-// MongoDB connection error handling
-mongoose.connection.on('error', err => {
-  console.error('MongoDB connection error:', err);
-});
-
-mongoose.connection.on('disconnected', () => {
-  console.log('MongoDB disconnected');
-});
-
-// MongoDB connection with graceful error handling
-let mongoConnected = false;
-
-mongoose.connect(process.env.DATABASE_URL || 'mongodb://127.0.0.1:27017/convomanage', mongoConfig)
-  .then(() => {
-    console.log('✅ Connected to MongoDB successfully');
-    mongoConnected = true;
-  })
-  .catch(err => {
-    console.error('❌ MongoDB connection failed:', err.message);
-    console.log('ℹ️  Application will continue without database functionality');
-    console.log('ℹ️  To fix this: Start MongoDB server or check your DATABASE_URL');
-    mongoConnected = false;
-  });
-
-// MongoDB connection event handlers
-mongoose.connection.on('error', err => {
-  console.error('MongoDB runtime error:', err.message);
-  mongoConnected = false;
-});
-
-mongoose.connection.on('disconnected', () => {
-  console.log('⚠️  MongoDB disconnected');
-  mongoConnected = false;
-});
-
-mongoose.connection.on('reconnected', () => {
-  console.log('✅ MongoDB reconnected');
-  mongoConnected = true;
-});
-
-// Middleware to check database connection
-app.use((req, res, next) => {
-  req.mongoConnected = mongoConnected;
-  next();
-});
-
-// Enable mongoose debug mode in development
-if (app.get('env') === 'development') {
-  mongoose.set('debug', true);
-}
-
-// View engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
-
-
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser(process.env.COOKIE_SECRET || 'cookie-secret'));
-app.use(express.static(path.join(__dirname, 'public')));
-app.use('/attendees', attendeesRouter);
-app.use('/conferences', conferencesRouter);
-// Session configuration
-const sessionConfig = {
-  secret: process.env.SESSION_SECRET || 'session-secret',
-  resave: false,
-  saveUninitialized: false,
-  store: MongoStore.create({ 
-    mongoUrl: process.env.DATABASE_URL || 'mongodb://127.0.0.1:27017/convomanage',
-    touchAfter: 24 * 3600,
-    crypto: {
-      secret: process.env.CRYPTO_SECRET || 'crypto-secret'
-    },
-    autoRemove: 'native',
-    ttl: 24 * 60 * 60 // = 1 day
-  }),
-  name: 'sessionId', 
-  cookie: {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: 1000 * 60 * 60 * 24, // 1 day
-    sameSite: 'lax'
+    res.render('dashboard', {
+      attendees,
+      conferences,
+      success: req.flash('success'),
+      error: req.flash('error')
+    });
+  } catch (err) {
+    req.flash('error', 'Failed to load attendees!');
+    res.redirect('/');
   }
-};
-
-// Use secure cookies in production
-if (app.get('env') === 'production') {
-  app.set('trust proxy', 1);
-  sessionConfig.cookie.secure = true;
-}
-
-app.use(session(sessionConfig));
-
-// Passport configuration
-app.use(passport.initialize());
-app.use(passport.session());
-passport.use(User.createStrategy());
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
-
-// Flash messages
-app.use(flash());
-
-// Global variables and custom middleware
-app.use((req, res, next) => {
-  res.locals.currentUser = req.user;
-  res.locals.error = req.flash('error');
-  res.locals.success = req.flash('success');
-  res.locals.currentPath = req.path;
-  // Add CSRF token to all views
-  res.locals.csrfToken = req.csrfToken?.() || '';
-  next();
 });
 
-// Routes
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+// ✅ POST new attendee
+router.post('/', async (req, res) => {
+  try {
+    const { name, email, company, title, conference, ticketType } = req.body;
+    const newAttendee = new Attendee({
+      name,
+      email,
+      company,
+      title,
+      conference,
+      ticketType
+    });
 
-// 404 handler
-app.use((req, res, next) => {
-  next(createError(404));
+    await newAttendee.save();
+
+    req.flash('success', '✅ Attendee Registered Successfully!');
+    res.redirect('/attendees');
+  } catch (err) {
+    console.error('Attendee save error:', err);
+    req.flash('error', '❌ Failed to register attendee!');
+    res.redirect('/attendees');
+  }
 });
 
-// Error handler
-app.use((err, req, res, next) => {
-  // Set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+// ✅ DELETE attendee
+router.post('/:id/delete', async (req, res) => {
+  try {
+    await Attendee.findByIdAndDelete(req.params.id);
+    req.flash('success', '🗑 Attendee deleted successfully!');
+    res.redirect('/attendees');
+  } catch (err) {
+    console.error('Attendee delete error:', err);
+    req.flash('error', '❌ Failed to delete attendee!');
+    res.redirect('/attendees');
+  }
 });
 
-module.exports = app;
-
+module.exports = router;
