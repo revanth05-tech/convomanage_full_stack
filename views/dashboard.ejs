@@ -306,87 +306,53 @@
                 </table>
             </div>
 
-            <!-- Conferences Management -->
-            <div id="conferences" class="dashboard">
-                <div class="form-section">
-                    <h2>Conference Setup</h2>
-                    <div id="conferenceAlert"></div>
-                    <form id="conferenceForm">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="conferenceName">Conference Name *</label>
-                                <input type="text" id="conferenceName" name="name" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="conferenceStartDate">Start Date</label>
-                                <input type="date" id="conferenceStartDate" name="startDate" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="conferenceEndDate">End Date</label>
-                                <input type="date" id="conferenceEndDate" name="endDate" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="conferenceCapacity">Max Capacity</label>
-                                <input type="number" id="conferenceCapacity" name="capacity" min="1" value="100">
-                            </div>
-                            <div class="form-group">
-                                <label for="conferenceType">Conference Type</label>
-                                <select id="conferenceType" name="type">
-                                    <option value="technology">Technology</option>
-                                    <option value="business">Business</option>
-                                    <option value="academic">Academic</option>
-                                    <option value="healthcare">Healthcare</option>
-                                    <option value="education">Education</option>
-                                    <option value="other">Other</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="conferenceStatus">Status</label>
-                                <select id="conferenceStatus" name="status">
-                                    <option value="planning">Planning</option>
-                                    <option value="active">Active</option>
-                                    <option value="completed">Completed</option>
-                                    <option value="cancelled">Cancelled</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="conferenceDescription">Description</label>
-                            <textarea id="conferenceDescription" name="description" rows="4" placeholder="Conference overview and objectives..."></textarea>
-                        </div>
-                        <button type="submit" class="btn">Create Conference</button>
-                    </form>
-                </div>
-
-                <div class="search-filter">
-                    <input type="text" id="conferenceSearch" placeholder="Search conferences..." onkeyup="filterConferences()">
-                    <select id="conferenceStatusFilter" onchange="filterConferences()">
-                        <option value="">All Status</option>
-                        <option value="planning">Planning</option>
-                        <option value="active">Active</option>
-                        <option value="completed">Completed</option>
-                        <option value="cancelled">Cancelled</option>
-                    </select>
-                </div>
-
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Type</th>
-                            <th>Start Date</th>
-                            <th>End Date</th>
-                            <th>Capacity</th>
-                            <th>Registered</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="conferencesTableBody">
-                    </tbody>
-                </table>
-            </div>
-
+            <!-- conference ejs -->
+             <form id="conferenceForm" action="/conferences" method="POST">
+    <div class="form-grid">
+        <div class="form-group">
+            <label for="conferenceName">Conference Name *</label>
+            <input type="text" id="conferenceName" name="name" required>
+        </div>
+        <div class="form-group">
+            <label for="conferenceStartDate">Start Date</label>
+            <input type="date" id="conferenceStartDate" name="startDate" required>
+        </div>
+        <div class="form-group">
+            <label for="conferenceEndDate">End Date</label>
+            <input type="date" id="conferenceEndDate" name="endDate" required>
+        </div>
+        <div class="form-group">
+            <label for="conferenceCapacity">Max Capacity</label>
+            <input type="number" id="conferenceCapacity" name="capacity" min="1" value="100">
+        </div>
+        <div class="form-group">
+            <label for="conferenceType">Conference Type</label>
+            <select id="conferenceType" name="type">
+                <option value="technology">Technology</option>
+                <option value="business">Business</option>
+                <option value="academic">Academic</option>
+                <option value="healthcare">Healthcare</option>
+                <option value="education">Education</option>
+                <option value="other">Other</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="conferenceStatus">Status</label>
+            <select id="conferenceStatus" name="status">
+                <option value="planning">Planning</option>
+                <option value="active">Active</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="conferenceDescription">Description</label>
+        <textarea id="conferenceDescription" name="description" rows="4" placeholder="Conference overview and objectives..."></textarea>
+    </div>
+    <button type="submit" class="btn">Create Conference</button>
+</form>
+            
             <!-- Analytics Dashboard -->
             <div id="analytics" class="dashboard">
                 <h2>Analytics & Reports</h2>
