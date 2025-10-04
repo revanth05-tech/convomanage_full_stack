@@ -1,3 +1,57 @@
+// Add this at the top
+const API_ENDPOINTS = {
+    attendees: '/api/attendees',
+    speakers: '/api/speakers',
+    sessions: '/api/sessions',
+    conferences: '/api/conferences'
+};
+
+// Replace your existing DOMContentLoaded event
+document.addEventListener('DOMContentLoaded', async function() {
+    try {
+        // Fetch initial data
+        await Promise.all([
+            fetchConferences(),
+            fetchAttendees(),
+            fetchSpeakers(),
+            fetchSessions()
+        ]);
+
+        // Initialize UI
+        updateDashboard();
+        populateDropdowns();
+        updateTables();
+
+        // Add form submission handlers
+        setupFormHandlers();
+    } catch (error) {
+        console.error('Initialization error:', error);
+        showAlert('attendeeAlert', 'error', 'Failed to load initial data');
+    }
+});
+
+// Add error handling wrapper
+async function handleApiRequest(endpoint, options = {}) {
+    try {
+        const response = await fetch(endpoint, {
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('API request failed:', error);
+        throw error;
+    }
+}
+
 // Dashboard JavaScript
         // Data storage
         let conferences = [];
@@ -11,7 +65,7 @@
             updateDashboard();
             populateDropdowns();
         });
-        
+
         // Navigation functions
         function showDashboard(dashboardId) {
             // Hide all dashboards
