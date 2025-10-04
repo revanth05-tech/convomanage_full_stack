@@ -81,10 +81,10 @@
     </div>
 
     <!-- Attendees Section -->
-    <div id="attendees" class="dashboard">
+    <div id="attendeesTable" class="data-table">
       <div class="form-section">
         <h2>Attendee Registration</h2>
-
+        <div id="attendeeAlert" class="alert-container"></div>
         <% if (success && success.length > 0) { %>
           <div class="alert alert-success"><%= success %></div>
         <% } %>
@@ -92,7 +92,7 @@
           <div class="alert alert-danger"><%= error %></div>
         <% } %>
 
-        <form id="attendeeForm" method="POST" action="/attendees">
+        <form id="attendeeForm">
           <div class="form-grid">
             <div class="form-group">
               <label for="attendeeName">Full Name *</label>
@@ -165,7 +165,7 @@
               <td><%= a.ticketType %></td>
               <td><%= a.status || 'pending' %></td>
               <td>
-                <form method="POST" action="/attendees/<%= a._id %>/delete" style="display:inline;">
+                <form style="display:inline;">
                   <button type="submit" class="btn btn-danger">Delete</button>
                 </form>
               </td>
@@ -176,11 +176,12 @@
     </div>
 
     <!-- Speakers Section -->
-    <div id="speakers" class="dashboard">
+    <div id="speakersTable" class="data-table">
       <div class="form-section">
         <h2>Speaker Management</h2>
+        <div id="speakerAlert" class="alert-container"></div>
         <div id="speakerAlert"></div>
-        <form id="speakerForm" method="POST" action="/speakers">
+        <form id="speakerForm">
           <div class="form-grid">
             <div class="form-group">
               <label for="speakerName">Speaker Name *</label>
@@ -233,11 +234,12 @@
     </div>
 
     <!-- Sessions Section -->
-    <div id="sessions" class="dashboard">
+    <div id="sessionsTable" class="data-table">
       <div class="form-section">
         <h2>Session Scheduling</h2>
+        <div id="sessionAlert" class="alert-container"></div>
         <div id="sessionAlert"></div>
-        <form id="sessionForm" method="POST" action="/sessions">
+        <form id="sessionForm">
           <div class="form-grid">
             <div class="form-group">
               <label for="sessionTitle">Session Title *</label>
@@ -296,10 +298,10 @@
     </div>
 
     <!-- Conferences Section -->
-    <div id="conferences" class="dashboard">
+    <div id="conferencesTable" class="data-table">
       <div class="form-section">
         <h2>Conference Setup</h2>
-
+<div id="conferenceAlert" class="alert-container"></div>
         <% if (success && success.length > 0) { %>
           <div class="alert alert-success"><%= success %></div>
         <% } %>
@@ -307,7 +309,7 @@
           <div class="alert alert-danger"><%= error %></div>
         <% } %>
 
-        <form id="conferenceForm" method="POST" action="/conferences">
+        <form id="conferenceForm">
           <div class="form-grid">
             <div class="form-group">
               <label for="conferenceName">Conference Name *</label>
@@ -387,7 +389,7 @@
                 <td><%= conf.capacity %></td>
                 <td><%= conf.status %></td>
                 <td>
-                  <form method="POST" action="/conferences/<%= conf._id %>/delete" style="display:inline;">
+                  <form  style="display:inline;">
                     <button type="submit" class="btn btn-danger">Delete</button>
                   </form>
                 </td>
