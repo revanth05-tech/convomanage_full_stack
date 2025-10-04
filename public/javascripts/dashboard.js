@@ -5,7 +5,22 @@ const API_ENDPOINTS = {
     sessions: '/api/sessions',
     conferences: '/api/conferences'
 };
-
+// Add this function at the top after API_ENDPOINTS
+function showDashboard(section) {
+    // Hide all dashboards
+    document.querySelectorAll('.dashboard').forEach(dash => {
+        dash.classList.remove('active');
+    });
+    
+    // Show selected dashboard
+    document.getElementById(section).classList.add('active');
+    
+    // Update nav buttons
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.querySelector(`[onclick="showDashboard('${section}')"]`).classList.add('active');
+}
 // -------------------- Data Storage --------------------
 let conferences = [];
 let attendees = [];
