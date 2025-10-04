@@ -147,6 +147,7 @@
         <thead>
           <tr>
             <th>Name</th>
+            <th>Email</th>
             <th>Company</th>
             <th>Conference</th>
             <th>Ticket</th>
@@ -158,6 +159,7 @@
           <% attendees.forEach(a => { %>
             <tr>
               <td><%= a.name %></td>
+              <td><%= a.email %></td>
               <td><%= a.company %></td>
               <td><%= a.conference ? a.conference.name : '' %></td>
               <td><%= a.ticketType %></td>
