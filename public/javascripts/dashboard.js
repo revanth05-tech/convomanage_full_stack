@@ -192,7 +192,7 @@
                 title: formData.get('title'),
                 conference: parseInt(formData.get('conference')),
                 ticketType: formData.get('ticketType'),
-                status: 'pending'
+                status: 'pending' || 'confrimed'
             };
 
             // Check for duplicate email
