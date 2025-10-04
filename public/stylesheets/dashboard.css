@@ -12,7 +12,39 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
         }
+        /* Add these alert container styles */
+.alert-container {
+    margin: 15px 0;
+}
 
+.alert {
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Add transition for table rows */
+.data-table tbody tr {
+    transition: all 0.3s ease;
+}
+
+/* Add loading state */
+.loading {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* Add disabled state for buttons */
+.btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
         .container {
             max-width: 1200px;
             margin: 0 auto;
