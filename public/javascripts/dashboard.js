@@ -375,3 +375,16 @@ function filterConferences() {
         row.style.display = matchesSearch && matchesStatus ? '' : 'none';
     });
 }
+
+async function deleteConference(id) {
+  if (!confirm("Are you sure you want to delete this conference?")) return;
+
+  try {
+    await handleApiRequest(`/api/conferences/${id}`, { method: 'DELETE' });
+    showAlert("conferenceFormAlert", "success", "Conference deleted successfully!");
+    await updateAllData();
+  } catch (err) {
+    showAlert("conferenceFormAlert", "error", "Failed to delete conference");
+  }
+}
+
