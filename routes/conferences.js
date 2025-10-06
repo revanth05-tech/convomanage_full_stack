@@ -15,22 +15,31 @@ router.get('/', async (req, res) => {
   }
 });
 
-// POST new conference
 router.post('/', async (req, res) => {
   try {
     const { name, type, startDate, endDate, capacity, status, description } = req.body;
+
+    if (!name) {
+      return res.status(400).json({ success: false, error: 'Conference name is required!' });
+    }
+
     const newConference = new Conference({
       name,
-      type,
+      type: type || 'other',
       startDate,
       endDate,
-      capacity,
-      status,
+      capacity: capacity || 100,
+      status: status || 'planning',
       description
     });
     await newConference.save();
+
+    if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+      return res.json({ success: true, conference: newConference });
+    }
     res.redirect('/conferences');
   } catch (err) {
+    console.error('Error creating conference:', err);
     res.status(500).json({ success: false, error: err.message });
   }
 });
@@ -46,12 +55,16 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// DELETE conference
 router.post('/:id/delete', async (req, res) => {
   try {
     await Conference.findByIdAndDelete(req.params.id);
+
+    if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+      return res.json({ success: true });
+    }
     res.redirect('/conferences');
   } catch (err) {
+    console.error('Error deleting conference:', err);
     res.status(500).json({ error: err.message });
   }
 });

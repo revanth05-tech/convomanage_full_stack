@@ -15,13 +15,12 @@ const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const attendeesRouter = require('./routes/attendees');
 const conferencesRouter = require('./routes/conferences');
+const apiRouter = require('./routes/api');
 
 const app = express();
 
 // -------------------- MongoDB Connection --------------------
 mongoose.connect(process.env.DATABASE_URL || 'mongodb://127.0.0.1:27017/convomanage', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
   serverSelectionTimeoutMS: 5000,
   autoIndex: true,
   maxPoolSize: 10
@@ -88,6 +87,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/attendees', attendeesRouter);
 app.use('/conferences', conferencesRouter);
+app.use('/api', apiRouter);
 
 // -------------------- 404 Handler --------------------
 app.use((req, res, next) => {

@@ -206,7 +206,7 @@ function updateAttendeesTable() {
                 <td>${conference ? conference.name : 'N/A'}</td>
                 <td>${attendee.ticketType?.toUpperCase() || 'N/A'}</td>
                 <td><span class="status-badge status-${attendee.status}">${attendee.status}</span></td>
-                <td><button class="btn btn-danger" onclick="deleteAttendee(${attendee.id})">Delete</button></td>
+                <td><button class="btn btn-danger" onclick="deleteAttendee('${attendee.id}')">Delete</button></td>
             </tr>
         `;
         tbody.innerHTML += row;
@@ -225,7 +225,7 @@ function updateSpeakersTable() {
                 <td>${speaker.company || 'N/A'}</td>
                 <td>${speaker.expertise || 'N/A'}</td>
                 <td>${speaker.fee?.toLocaleString() || 0}</td>
-                <td><button class="btn btn-danger" onclick="deleteSpeaker(${speaker.id})">Delete</button></td>
+                <td><button class="btn btn-danger" onclick="deleteSpeaker('${speaker.id}')">Delete</button></td>
             </tr>
         `;
         tbody.innerHTML += row;
@@ -247,7 +247,7 @@ function updateSessionsTable() {
                 <td>${session.date}</td>
                 <td>${session.startTime}</td>
                 <td>${session.duration} min</td>
-                <td><button class="btn btn-danger" onclick="deleteSession(${session.id})">Delete</button></td>
+                <td><button class="btn btn-danger" onclick="deleteSession('${session.id}')">Delete</button></td>
             </tr>
         `;
         tbody.innerHTML += row;
@@ -269,7 +269,7 @@ function updateConferencesTable() {
                 <td>${conference.capacity}</td>
                 <td>${registeredCount}</td>
                 <td><span class="status-badge status-${conference.status}">${conference.status}</span></td>
-                <td><button class="btn btn-danger" onclick="deleteConference(${conference.id})">Delete</button></td>
+                <td><button class="btn btn-danger" onclick="deleteConference('${conference.id}')">Delete</button></td>
             </tr>
         `;
         tbody.innerHTML += row;
@@ -304,29 +304,51 @@ function updateAnalyticsTable() {
     });
 }
 
-// -------------------- Delete with API --------------------
 async function deleteAttendee(id) {
     if (confirm('Delete this attendee?')) {
-        await handleApiRequest(`${API_ENDPOINTS.attendees}/${id}`, { method: 'DELETE' });
-        await updateAllData();
+        try {
+            await handleApiRequest(`${API_ENDPOINTS.attendees}/${id}`, { method: 'DELETE' });
+            await updateAllData();
+            showAlert('attendeeAlert', 'success', 'Attendee deleted successfully');
+        } catch (err) {
+            showAlert('attendeeAlert', 'error', 'Failed to delete attendee');
+        }
     }
 }
+
 async function deleteSpeaker(id) {
     if (confirm('Delete this speaker?')) {
-        await handleApiRequest(`${API_ENDPOINTS.speakers}/${id}`, { method: 'DELETE' });
-        await updateAllData();
+        try {
+            await handleApiRequest(`${API_ENDPOINTS.speakers}/${id}`, { method: 'DELETE' });
+            await updateAllData();
+            showAlert('speakerAlert', 'success', 'Speaker deleted successfully');
+        } catch (err) {
+            showAlert('speakerAlert', 'error', 'Failed to delete speaker');
+        }
     }
 }
+
 async function deleteSession(id) {
     if (confirm('Delete this session?')) {
-        await handleApiRequest(`${API_ENDPOINTS.sessions}/${id}`, { method: 'DELETE' });
-        await updateAllData();
+        try {
+            await handleApiRequest(`${API_ENDPOINTS.sessions}/${id}`, { method: 'DELETE' });
+            await updateAllData();
+            showAlert('sessionAlert', 'success', 'Session deleted successfully');
+        } catch (err) {
+            showAlert('sessionAlert', 'error', 'Failed to delete session');
+        }
     }
 }
+
 async function deleteConference(id) {
     if (confirm('Delete this conference and all its related data?')) {
-        await handleApiRequest(`${API_ENDPOINTS.conferences}/${id}`, { method: 'DELETE' });
-        await updateAllData();
+        try {
+            await handleApiRequest(`${API_ENDPOINTS.conferences}/${id}`, { method: 'DELETE' });
+            await updateAllData();
+            showAlert('conferenceFormAlert', 'success', 'Conference deleted successfully');
+        } catch (err) {
+            showAlert('conferenceFormAlert', 'error', 'Failed to delete conference');
+        }
     }
 }
 
@@ -376,15 +398,4 @@ function filterConferences() {
     });
 }
 
-async function deleteConference(id) {
-  if (!confirm("Are you sure you want to delete this conference?")) return;
-
-  try {
-    await handleApiRequest(`/api/conferences/${id}`, { method: 'DELETE' });
-    showAlert("conferenceFormAlert", "success", "Conference deleted successfully!");
-    await updateAllData();
-  } catch (err) {
-    showAlert("conferenceFormAlert", "error", "Failed to delete conference");
-  }
-}
 

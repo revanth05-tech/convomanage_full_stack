@@ -3,21 +3,26 @@ const router = express.Router();
 const Attendee = require('../models/attendee');
 const Conference = require('../models/conference');
 
-// ---------------- GET attendee registration + list ----------------
 router.get('/', async (req, res) => {
   try {
     const attendees = await Attendee.find().populate('conference');
     const conferences = await Conference.find();
-    res.render('dashboard', { 
-      attendees, 
-      conferences, 
-      success: req.flash('success'), 
-      error: req.flash('error') 
+    res.render('dashboard', {
+      attendees,
+      conferences,
+      currentUser: req.user,
+      totalAttendees: attendees.length,
+      totalSpeakers: 0,
+      totalSessions: 0,
+      totalConferences: conferences.length,
+      page: 'attendees',
+      success: req.flash('success'),
+      error: req.flash('error')
     });
   } catch (err) {
     console.error('Attendee load error:', err);
     req.flash('error', 'Failed to load attendees!');
-    res.redirect('/'); // main site home
+    res.redirect('/');
   }
 });
 

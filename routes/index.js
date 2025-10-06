@@ -10,10 +10,6 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
-passport.use(User.createStrategy());
-
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) return next();
   req.flash('error', 'Please log in to view that resource');
