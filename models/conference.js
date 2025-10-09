@@ -7,12 +7,7 @@ const conferenceSchema = new mongoose.Schema({
   capacity: { type: Number, default: 100 },
   type: { type: String, default: 'other' },
   status: { type: String, default: 'planning' },
-  description: String,
-  createdBy: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'User', 
-    required: true 
-  }
+  description: String
 }, { timestamps: true });
 
 module.exports = mongoose.model('Conference', conferenceSchema);

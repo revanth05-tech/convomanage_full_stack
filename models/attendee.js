@@ -1,3 +1,5 @@
+
+
 const mongoose = require('mongoose');
 
 const attendeeSchema = new mongoose.Schema({
@@ -8,11 +10,6 @@ const attendeeSchema = new mongoose.Schema({
   conference: { type: mongoose.Schema.Types.ObjectId, ref: 'Conference', required: true },
   ticketType: { type: String, enum: ['standard', 'premium', 'vip'], default: 'standard' },
   status: { type: String, enum: ['confirmed', 'pending', 'cancelled'], default: 'pending' },
-  createdBy: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'User', 
-    required: true 
-  },
   createdAt: { type: Date, default: Date.now }
 });
 

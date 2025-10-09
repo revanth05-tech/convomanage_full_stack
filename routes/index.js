@@ -119,29 +119,6 @@ router.get('/profile', ensureAuthenticated, (req, res) => {
   res.render('profile', { title: 'Profile', page: 'profile', user: req.user });
 });
 
-router.get('/profile', ensureAuthenticated, async (req, res) => {
-  try {
-    const userId = req.user._id;
-
-    // Fetch related data for this user
-    const userConferences = await Conference.find({ createdBy: userId });
-    const userSpeakers = await Speaker.find({ createdBy: userId });
-    const userAttendees = await Attendee.find({ createdBy: userId });
-
-    res.render('profile', {
-      title: 'Profile',
-      page: 'profile',
-      user: req.user,
-      conferences: userConferences,
-      speakers: userSpeakers,
-      attendees: userAttendees
-    });
-  } catch (err) {
-    console.error(err);
-    req.flash('error', 'Error loading your profile data');
-    res.redirect('/dashboard');
-  }
-});
 
 router.post('/upload-profile', ensureAuthenticated, upload.single('profileImage'), async (req, res) => {
   try {

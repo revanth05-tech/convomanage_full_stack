@@ -7,12 +7,7 @@ const speakerSchema = new mongoose.Schema({
   title: String,
   expertise: String,
   fee: { type: Number, default: 0 },
-  bio: String,
-  createdBy: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'User', 
-    required: true 
-  }
+  bio: String
 }, { timestamps: true });
 
 module.exports = mongoose.model('Speaker', speakerSchema);
